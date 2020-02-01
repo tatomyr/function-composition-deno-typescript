@@ -9,3 +9,9 @@ export const match = <K extends string, T = string>(
 export const unwrapId = ({id}: ObjectWith<'id'>) => id
 
 export const matchId = match(unwrapId)
+
+export const identity = <T>(item: T): T => item
+
+export const changeIf = <T>(predicate: (parameter: T) => boolean) => (
+  transformer: (parameter: T) => T
+) => (item: T) => (predicate(item) ? transformer(item) : item)
