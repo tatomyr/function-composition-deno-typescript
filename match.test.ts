@@ -1,6 +1,13 @@
 import {test, runTests} from 'https://deno.land/std/testing/mod.ts'
 import {assertEquals} from 'https://deno.land/std/testing/asserts.ts'
-import {matchId, unwrapId, match, changeIf} from './match.ts'
+import {
+  matchId,
+  unwrapId,
+  match,
+  changeIf,
+  decorateIf,
+  notMatchId,
+} from './match.ts'
 
 let testObj = {id: 'my-id', other: 'data'}
 let testArr = [{id: 'some-id', some: 'data'}, {...testObj}, {id: 'another-id'}]
@@ -39,6 +46,22 @@ test(function changeIf__should_change_the_matching_item_in_array() {
     changeIf(matchId('my-id'))((item) => ({...item, updated: true}))
   )
   assertEquals(updatedArray, updatedArrayUsingChangeIf)
+})
+
+test(function decorateIf__should_decorate_the_matching_item_in_array() {
+  let updatedArray = testArr.map((item) =>
+    item.id === 'my-id' ? {...item, updated: true} : item
+  )
+  let updatedArrayUsingDecorateIf = testArr.map(
+    decorateIf(matchId('my-id'))({updated: true})
+  )
+  assertEquals(updatedArray, updatedArrayUsingDecorateIf)
+})
+
+test(function notMatchId__should_filter_out_matched_object() {
+  let filteredArray = testArr.filter((item) => item.id !== 'my-id')
+  let filteredArrayUsingNotMatchId = testArr.filter(notMatchId('my-id'))
+  assertEquals(filteredArray, filteredArrayUsingNotMatchId)
 })
 
 runTests()
